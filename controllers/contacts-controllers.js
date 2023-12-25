@@ -1,7 +1,6 @@
 import * as contactService from '../models/contacts.js';
 import { HttpError } from '../helpers/index.js';
 import { contactAddSchema } from '../schemas/contacts-schemas.js';
-import { rules } from 'eslint-config-prettier';
 
 export const getAll = async (req, resp, next) => {
   try {
