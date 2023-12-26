@@ -18,7 +18,6 @@ export const getById = async (req, resp, next) => {
   try {
     const { contactId } = req.params;
     const result = await contactService.getContactById(contactId);
-    console.log(contactId);
     if (!result) {
       throw HttpError(404);
     }
@@ -43,16 +42,16 @@ export const add = async (req, resp, next) => {
 
 export const updateById = async (req, resp, next) => {
   try {
-    const error = contactUpdateSchema.validate(req.body);
+    const { error } = contactUpdateSchema.validate(req.body);
     if (error) {
       throw HttpError(400, error.message);
     }
     const { contactId } = req.params;
-    const result = await contactService.updateContact(contactId, resp.body);
+    const result = await contactService.updateContact(contactId, req.body);
     if (!result) {
       throw HttpError(404, 'Not found');
     }
-    resp.status(200).json(result);
+    resp.json(result);
   } catch (error) {
     next(error);
   }
