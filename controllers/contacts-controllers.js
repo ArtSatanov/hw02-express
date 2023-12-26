@@ -17,9 +17,9 @@ export const getById = async (req, resp, next) => {
     const result = await contactService.getContactById(contactId);
     console.log(contactId);
     if (!result) {
-      throw HttpError(404, 'Not found');
+      throw HttpError(404);
     }
-    resp.status(200).json(result);
+    resp.json(result);
   } catch (error) {
     next(error);
   }
