@@ -1,5 +1,5 @@
 import { HttpError } from '../helpers/index.js';
-import { contactUpdateSchema } from '../schemas/contacts-schemas.js';
+import { contactUpdateSchema } from '../models/Contact.js';
 
 const isValidUpdateRequest = (req, resp, next) => {
   const { error } = contactUpdateSchema.validate(req.body);
