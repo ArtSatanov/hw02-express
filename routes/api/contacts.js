@@ -17,11 +17,11 @@ router.post('/', isEmptyBody, isValidAddRequest, contactsController.add);
 
 // router.delete('/:contactId', contactsController.deleteById);
 
-// router.put(
-//   '/:contactId',
-//   isEmptyBody,
-//   isValidUpdateRequest,
-//   contactsController.updateById
-// );
+router.put(
+  '/:contactId',
+  isEmptyBody,
+  isValidUpdateRequest,
+  contactsController.updateById
+);
 
 export default router;
