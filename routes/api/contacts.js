@@ -4,15 +4,16 @@ import {
   isEmptyBody,
   isValidAddRequest,
   isValidUpdateRequest,
+  isValidId,
 } from '../../middlewares/index.js';
 
 const router = express.Router();
 
 router.get('/', contactsController.getAll);
 
-// router.get('/:contactId', contactsController.getById);
+router.get('/:contactId', isValidId, contactsController.getById);
 
-// router.post('/', isEmptyBody, isValidAddRequest, contactsController.add);
+router.post('/', isEmptyBody, isValidAddRequest, contactsController.add);
 
 // router.delete('/:contactId', contactsController.deleteById);
 
