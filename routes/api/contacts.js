@@ -16,11 +16,12 @@ router.get('/:contactId', isValidId, contactsController.getById);
 
 router.post('/', isEmptyBody, isValidAddRequest, contactsController.add);
 
-router.delete('/:contactId', contactsController.deleteById);
+router.delete('/:contactId', isValidId, contactsController.deleteById);
 
 router.put(
   '/:contactId',
   isEmptyBody,
+  isValidId,
   isValidUpdateRequest,
   contactsController.updateById
 );
@@ -28,6 +29,7 @@ router.put(
 router.patch(
   '/:contactId/favorite',
   isEmptyBody,
+  isValidId,
   isValidAddToFav,
   contactsController.updateById
 );
