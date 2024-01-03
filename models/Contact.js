@@ -35,7 +35,7 @@ export const contactAddSchema = Joi.object({
   phone: Joi.string().required().messages({
     'any.required': `"phone" must be exist`,
   }),
-  favorite: Joi.boolean().required(),
+  favorite: Joi.boolean(),
 });
 
 export const contactUpdateSchema = Joi.object({
@@ -48,6 +48,10 @@ export const contactUpdateSchema = Joi.object({
   phone: Joi.string().messages({
     'any.required': `"phone" must be string`,
   }),
+});
+
+export const movieUpdateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(),
 });
 
 const Contact = model('contact', contactSchema);

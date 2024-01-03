@@ -5,6 +5,7 @@ import {
   isValidAddRequest,
   isValidUpdateRequest,
   isValidId,
+  isValidAddToFav,
 } from '../../middlewares/index.js';
 
 const router = express.Router();
@@ -15,12 +16,19 @@ router.get('/:contactId', isValidId, contactsController.getById);
 
 router.post('/', isEmptyBody, isValidAddRequest, contactsController.add);
 
-// router.delete('/:contactId', contactsController.deleteById);
+router.delete('/:contactId', contactsController.deleteById);
 
 router.put(
   '/:contactId',
   isEmptyBody,
   isValidUpdateRequest,
+  contactsController.updateById
+);
+
+router.patch(
+  '/:contactId/favorite',
+  isEmptyBody,
+  isValidAddToFav,
   contactsController.updateById
 );
 

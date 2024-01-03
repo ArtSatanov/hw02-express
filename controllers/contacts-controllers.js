@@ -48,15 +48,15 @@ export const updateById = async (req, resp, next) => {
   }
 };
 
-// export const deleteById = async (req, resp, next) => {
-//   try {
-//     const { contactId } = req.params;
-//     const result = await contactService.removeContact(contactId);
-//     if (!result) {
-//       throw HttpError(404, 'Not found');
-//     }
-//     resp.status(200).json({ message: 'Delete success' });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+export const deleteById = async (req, resp, next) => {
+  try {
+    const { contactId } = req.params;
+    const result = await Contact.findByIdAndDelete(contactId);
+    if (!result) {
+      throw HttpError(404, 'Not found');
+    }
+    resp.status(200).json({ message: 'Delete success' });
+  } catch (error) {
+    next(error);
+  }
+};
