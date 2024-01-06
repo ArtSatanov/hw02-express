@@ -1,20 +1,14 @@
 import express from 'express';
-import * as userController from '../../controllers/auth-controllers.js';
-import {
-  isEmptyBody,
-  IsValidSignupRequest,
-  isValidUpdateRequest,
-  isValidId,
-  isValidAddToFav,
-} from '../../middlewares/index.js';
+import * as authController from '../../controllers/auth-controllers.js';
+import { isEmptyBody, IsValidSignupRequest } from '../../middlewares/index.js';
 
 const authRouter = express.Router();
 
 authRouter.post(
-  '/signup',
+  '/register',
   isEmptyBody,
   IsValidSignupRequest,
-  userController.signup
+  authController.signup
 );
 
 export default authRouter;

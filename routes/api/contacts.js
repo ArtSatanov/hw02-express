@@ -8,17 +8,22 @@ import {
   isValidAddToFav,
 } from '../../middlewares/index.js';
 
-const router = express.Router();
+const contactsRouter = express.Router();
 
-router.get('/', contactsController.getAll);
+contactsRouter.get('/', contactsController.getAll);
 
-router.get('/:contactId', isValidId, contactsController.getById);
+contactsRouter.get('/:contactId', isValidId, contactsController.getById);
 
-router.post('/', isEmptyBody, isValidAddRequest, contactsController.add);
+contactsRouter.post(
+  '/',
+  isEmptyBody,
+  isValidAddRequest,
+  contactsController.add
+);
 
-router.delete('/:contactId', isValidId, contactsController.deleteById);
+contactsRouter.delete('/:contactId', isValidId, contactsController.deleteById);
 
-router.put(
+contactsRouter.put(
   '/:contactId',
   isEmptyBody,
   isValidId,
@@ -26,7 +31,7 @@ router.put(
   contactsController.updateById
 );
 
-router.patch(
+contactsRouter.patch(
   '/:contactId/favorite',
   isEmptyBody,
   isValidId,
@@ -34,4 +39,4 @@ router.patch(
   contactsController.updateById
 );
 
-export default router;
+export default contactsRouter;
