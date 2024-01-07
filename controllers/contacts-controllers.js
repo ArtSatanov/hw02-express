@@ -11,21 +11,23 @@ export const getAll = async (req, resp, next) => {
 };
 
 export const getById = async (req, resp, next) => {
-  try {
-    const { contactId } = req.params;
-    const result = await Contact.findById(contactId);
-    if (!result) {
-      throw HttpError(404);
-    }
-    resp.json(result);
-  } catch (error) {
-    next(error);
-  }
+  console.log(req.user);
+  // try {
+  //   const { contactId } = req.params;
+  //   const result = await Contact.findById(contactId);
+  //   if (!result) {
+  //     throw HttpError(404);
+  //   }
+  //   resp.json(result);
+  // } catch (error) {
+  //   next(error);
+  // }
 };
 
 export const add = async (req, resp, next) => {
   try {
-    const result = await Contact.create(req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
     resp.status(201).json(result);
   } catch (error) {
     next(error);
