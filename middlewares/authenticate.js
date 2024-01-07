@@ -9,7 +9,7 @@ const { JWT_SECRET } = process.env;
 const authenticate = async (req, resp, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
-    next(HttpError(401, 'Authorization not define'));
+    next(HttpError(401, 'Not authorized'));
   }
   const [bearer, token] = authorization.split(' ');
   if (bearer !== 'Bearer') {
@@ -19,8 +19,8 @@ const authenticate = async (req, resp, next) => {
     const { id } = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(id);
 
-    if (!user) {
-      return next(HttpError(401, 'User is not defind in DB'));
+    if (!user || !user.token || token !== user.token) {
+      return next(HttpError(401, 'Not authorized'));
     }
 
     req.user = user;
