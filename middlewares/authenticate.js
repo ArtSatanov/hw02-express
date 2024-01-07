@@ -11,9 +11,9 @@ const authenticate = async (req, resp, next) => {
   if (!authorization) {
     next(HttpError(401, 'Authorization not define'));
   }
-  const [bearer, token] = authorization.split('');
+  const [bearer, token] = authorization.split(' ');
   if (bearer !== 'Bearer') {
-    next(HttpError(401));
+    return next(HttpError(401));
   }
   try {
     const { id } = jwt.verify(token, JWT_SECRET);
