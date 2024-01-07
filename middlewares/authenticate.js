@@ -17,13 +17,13 @@ const authenticate = async (req, resp, next) => {
   }
   try {
     const { id } = jwt.verify(token, JWT_SECRET);
-    const user = User.findById(id);
+    const user = await User.findById(id);
 
     if (!user) {
       return next(HttpError(401, 'User is not defind in DB'));
     }
+
     req.user = user;
-    console.log(user);
     next();
   } catch (error) {
     next(HttpError(401, 'Not authorized'));
