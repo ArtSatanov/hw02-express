@@ -52,3 +52,8 @@ export const signin = async (req, resp, next) => {
     next(error);
   }
 };
+
+export const getCurrent = async (req, resp) => {
+  const { email, subscription } = req.user;
+  resp.json({ email, subscription });
+};
