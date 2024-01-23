@@ -24,6 +24,7 @@ const userSchema = new Schema(
       default: 'starter',
     },
     token: String,
+    avatarURL: String,
   },
   { versionKey: false, timestamps: true }
 );
@@ -39,7 +40,6 @@ export const userSignupSchema = Joi.object({
   password: Joi.string().min(6).required().messages({
     'any.required': `"password" must contain 6 symbols`,
   }),
-  subscription: Joi.string().valid(...subscriptionList),
 });
 
 export const userSigninSchema = Joi.object({

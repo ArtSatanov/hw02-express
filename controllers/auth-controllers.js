@@ -3,10 +3,13 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs/promises';
 
 dotenv.config();
 
 const { JWT_SECRET } = process.env;
+const AvatarsPath = path.resolve('public', 'avatars');
 
 export const signup = async (req, resp, next) => {
   try {
@@ -66,4 +69,17 @@ export const signout = async (req, res) => {
   res.json({
     message: 'Signout success',
   });
+};
+
+export const updateAvatar = async (req, resp) => {
+  const { _id } = req.user;
+  console.log(req.body);
+  console.log(req.file);
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(AvatarsPath, filename);
+  await fs.rename(oldPath, newPath);
+  const avatar = path.join('public', 'avatars', filename);
+  console.log(avatar);
+
+  await User.findByIdAndUpdate(_id, { avatarURL: avatar });
 };
