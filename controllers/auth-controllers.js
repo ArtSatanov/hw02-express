@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs/promises';
 import Jimp from 'jimp';
+import gravatar from 'gravatar';
 
 dotenv.config();
 
@@ -20,7 +21,12 @@ export const signup = async (req, resp, next) => {
       throw HttpError(409, 'Email in use');
     }
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const avatarURL = gravatar.url(email);
+    const newUser = await User.create({
+      ...req.body,
+      avatarURL,
+      password: hashPassword,
+    });
     if (!newUser) {
       throw HttpError(404);
     }
