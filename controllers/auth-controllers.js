@@ -1,4 +1,4 @@
-import { HttpError } from '../helpers/index.js';
+import { HttpError, cloudinary } from '../helpers/index.js';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -71,15 +71,22 @@ export const signout = async (req, res) => {
   });
 };
 
-export const updateAvatar = async (req, resp) => {
-  const { _id } = req.user;
-  console.log(req.body);
-  console.log(req.file);
-  const { path: oldPath, filename } = req.file;
-  const newPath = path.join(AvatarsPath, filename);
-  await fs.rename(oldPath, newPath);
-  const avatar = path.join('public', 'avatars', filename);
-  console.log(avatar);
+export const updateAvatar = async (req, resp, next) => {
+  try {
+    const { _id } = req.user;
+    const { path: avatarURL } = await cloudinary.uploader.upload(
+      req.file.path,
+      {
+        folder: 'avatars',
+      }
+    );
+    console.log(avatarURL);
+    await fs.unlink(req.file.path);
 
-  await User.findByIdAndUpdate(_id, { avatarURL: avatar });
+    await User.findByIdAndUpdate(_id, { avatarURL });
+    resp.status(201).json({ avatarURL });
+  } catch (error) {
+    await fs.unlink(req.file.path);
+    next(error);
+  }
 };
