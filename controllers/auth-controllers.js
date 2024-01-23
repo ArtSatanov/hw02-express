@@ -1,15 +1,16 @@
-import { HttpError, cloudinary } from '../helpers/index.js';
+import { HttpError } from '../helpers/index.js';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs/promises';
+import Jimp from 'jimp';
 
 dotenv.config();
 
 const { JWT_SECRET } = process.env;
-const AvatarsPath = path.resolve('public', 'avatars');
+const avatarsPath = path.resolve('public', 'avatars');
 
 export const signup = async (req, resp, next) => {
   try {
@@ -73,18 +74,26 @@ export const signout = async (req, res) => {
 
 export const updateAvatar = async (req, resp, next) => {
   try {
+    if (!req.file) {
+      throw HttpError(400, 'missing file');
+    }
     const { _id } = req.user;
-    const { path: avatarURL } = await cloudinary.uploader.upload(
-      req.file.path,
-      {
-        folder: 'avatars',
-      }
-    );
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarsPath, filename);
+    Jimp.read(oldPath)
+      .then(image => {
+        image.resize(250, 250).write(newPath);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    await fs.rename(oldPath, newPath);
+    const avatarURL = path.join('avatars', filename);
+
     console.log(avatarURL);
-    await fs.unlink(req.file.path);
 
     await User.findByIdAndUpdate(_id, { avatarURL });
-    resp.status(201).json({ avatarURL });
+    resp.status(200).json({ avatarURL });
   } catch (error) {
     await fs.unlink(req.file.path);
     next(error);
