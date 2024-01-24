@@ -59,6 +59,12 @@ export const userSigninSchema = Joi.object({
   }),
 });
 
+export const userResendVerify = Joi.object({
+  email: Joi.string().required().pattern(emailRegexp).messages({
+    'any.required': `"email" must be string`,
+  }),
+});
+
 const User = model('user', userSchema);
 
 export default User;

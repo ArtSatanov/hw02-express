@@ -23,18 +23,19 @@ export const signup = async (req, resp, next) => {
     }
     const hashPassword = await bcrypt.hash(password, 10);
     const avatarURL = gravatar.url(email);
+
+    const verificationToken = nanoid();
     const newUser = await User.create({
       ...req.body,
       avatarURL,
       password: hashPassword,
+      verificationToken,
     });
-
-    const verificationCode = nanoid();
 
     const verificationEmail = {
       to: email,
-      subject: 'Veriffy email',
-      html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationCode}">Click to verify email</a>`,
+      subject: 'Verify email',
+      html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify email</a>`,
     };
 
     await sendEmail(verificationEmail);
@@ -84,13 +85,17 @@ export const getCurrent = async (req, resp) => {
   resp.json({ email, subscription });
 };
 
-export const signout = async (req, res) => {
-  const { _id } = req.user;
-  await User.findByIdAndUpdate(_id, { token: '' });
+export const signout = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    await User.findByIdAndUpdate(_id, { token: '' });
 
-  res.json({
-    message: 'Signout success',
-  });
+    res.json({
+      message: 'Signout success',
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const updateAvatar = async (req, resp, next) => {
@@ -122,17 +127,48 @@ export const updateAvatar = async (req, resp, next) => {
 };
 
 export const verify = async (req, resp, next) => {
-  const { verificationCode } = req.params;
-  const user = await User.findOne({ verificationCode });
-  if (!user) {
-    throw HttpError(400, 'Email not found');
-  }
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verificationCode: '',
-  });
+  try {
+    const { verificationToken } = req.params;
+    const user = await User.findOne({ verificationToken });
+    console.log(req.params);
+    if (!user) {
+      throw HttpError(404, 'User not found');
+    }
+    await User.findByIdAndUpdate(user._id, {
+      verify: true,
+      verificationToken: '0',
+    });
 
-  res.json({
-    message: 'Email veify success',
-  });
+    resp.json({
+      message: 'Verification successful',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendVerifyEmail = async (req, resp, next) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw HttpError(401, 'Email or password is wrong');
+    }
+    if (user.verify) {
+      throw HttpError(400, 'Verification has already been passed');
+    }
+    const verificationEmail = {
+      to: email,
+      subject: 'Verify email',
+      html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify email</a>`,
+    };
+
+    await sendEmail(verificationEmail);
+
+    resp.json({
+      message: 'Verification email sent',
+    });
+  } catch (error) {
+    next(error);
+  }
 };

@@ -7,3 +7,4 @@ export { default as isValidSignup } from './isValidSignup.js';
 export { default as isValidSignin } from './isValidSignin.js';
 export { default as authenticate } from './authenticate.js';
 export { default as upload } from './upload.js';
+export { default as isValidResendVerify } from './isValidResendVerify.js';
