@@ -1,4 +1,4 @@
-import { HttpError } from '../helpers/index.js';
+import { HttpError, sendEmail } from '../helpers/index.js';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -7,10 +7,11 @@ import path from 'path';
 import fs from 'fs/promises';
 import Jimp from 'jimp';
 import gravatar from 'gravatar';
+import { nanoid } from 'nanoid';
 
 dotenv.config();
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, BASE_URL } = process.env;
 const avatarsPath = path.resolve('public', 'avatars');
 
 export const signup = async (req, resp, next) => {
@@ -27,6 +28,17 @@ export const signup = async (req, resp, next) => {
       avatarURL,
       password: hashPassword,
     });
+
+    const verificationCode = nanoid();
+
+    const verificationEmail = {
+      to: email,
+      subject: 'Veriffy email',
+      html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationCode}">Click to verify email</a>`,
+    };
+
+    await sendEmail(verificationEmail);
+
     if (!newUser) {
       throw HttpError(404);
     }
@@ -44,6 +56,9 @@ export const signin = async (req, resp, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
+      throw HttpError(401, 'Email or password is wrong');
+    }
+    if (!user.verify) {
       throw HttpError(401, 'Email or password is wrong');
     }
 
@@ -104,4 +119,20 @@ export const updateAvatar = async (req, resp, next) => {
     await fs.unlink(req.file.path);
     next(error);
   }
+};
+
+export const verify = async (req, resp, next) => {
+  const { verificationCode } = req.params;
+  const user = await User.findOne({ verificationCode });
+  if (!user) {
+    throw HttpError(400, 'Email not found');
+  }
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationCode: '',
+  });
+
+  res.json({
+    message: 'Email veify success',
+  });
 };

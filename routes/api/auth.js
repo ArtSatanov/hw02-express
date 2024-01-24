@@ -20,5 +20,10 @@ authRouter.patch(
   authenticate,
   authController.updateAvatar
 );
+authRouter.get(
+  '/verify::verificationCode',
+  authenticate,
+  authController.verify
+);
 
 export default authRouter;
